@@ -1,0 +1,36 @@
+﻿@inject ToDoApp.Services.INotificationService NotificationService
+
+@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    var unreadCount = await NotificationService.GetUnreadNotificationCountAsync(User.Identity.Name!);
+    var notifications = await NotificationService.GetUnreadNotificationsAsync(User.Identity.Name!);
+
+    <li class="nav-item dropdown">
+        <a class="nav-link text-white" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-bell-fill"></i>
+            @if (unreadCount > 0)
+            {
+                <span class="badge bg-danger rounded-pill position-absolute top-0 start-70 translate-middle">@unreadCount</span>
+            }
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="width: 300px;">
+            @if (notifications.Any())
+            {
+                @foreach (var notification in notifications)
+                {
+                    <li>
+                        <a class="dropdown-item text-wrap" asp-controller="Tasks" asp-action="Details" asp-route-id="@notification.TaskId">
+                            @notification.Message
+                            <br />
+                            <small class="text-muted">@notification.Timestamp.ToLocalTime().ToString("g")</small>
+                        </a>
+                    </li>
+                }
+            }
+            else
+            {
+                <li><a class="dropdown-item" href="#">No new notifications</a></li>
+            }
+        </ul>
+    </li>
+}

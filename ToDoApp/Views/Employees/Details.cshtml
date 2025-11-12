@@ -1,0 +1,66 @@
+﻿@model ToDoApp.Models.Employee
+@{
+    ViewData["Title"] = "Employee Details";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h2>Employee Details</h2>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3 text-center">
+                <img src="@Url.Action("GetAvatar", "Employees", new { id = Model.Id })" alt="Avatar" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;" />
+            </div>
+            <div class="col-md-9">
+                <dl class="row">
+                    <dt class="col-sm-4">First Name:</dt>
+                    <dd class="col-sm-8">@Model.FirstName</dd>
+
+                    <dt class="col-sm-4">Last Name:</dt>
+                    <dd class="col-sm-8">@Model.LastName</dd>
+
+                    <dt class="col-sm-4">Username:</dt>
+                    <dd class="col-sm-8">@Model.Username</dd>
+
+                    <dt class="col-sm-4">Age:</dt>
+                    <dd class="col-sm-8">@Model.Age</dd>
+
+                    <dt class="col-sm-4">Date of Birth:</dt>
+                    <dd class="col-sm-8">@Model.DateOfBirth.ToString("yyyy-MM-dd")</dd>
+
+                    <dt class="col-sm-4">Specialty:</dt>
+                    <dd class="col-sm-8">@Model.Specialty</dd>
+
+                    <dt class="col-sm-4">Hire Date:</dt>
+                    <dd class="col-sm-8">@Model.HireDate.ToString("yyyy-MM-dd")</dd>
+                </dl>
+            </div>
+        </div>
+
+        <h3 class="mt-4 border-top pt-3">Tasks</h3>
+        <div id="employeeTasks">
+            @if (Model.Tasks != null && Model.Tasks.Any())
+            {
+                @await Html.PartialAsync("_EmployeeTasksPartial", Model.Tasks)
+            }
+            else
+            {
+                <div class="alert alert-info">No tasks assigned to this employee.</div>
+            }
+        </div>
+
+        <div class="mt-3">
+            <a asp-action="Create" asp-controller="Tasks" asp-route-employeeId="@Model.Id" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Add Task
+            </a>
+        </div>
+
+        <div class="mt-4 border-top pt-3">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                <i class="bi bi-pencil-square"></i> Edit
+            </a>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+</div>

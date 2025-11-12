@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthAPI", "AuthAPI\AuthAPI.csproj", "{EE543950-3515-4431-91DF-0E41A9904BF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoApp", "ToDoApp\ToDoApp.csproj", "{05C19291-C93A-40D2-88C5-D2735EDA2B46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{703B2099-8AEB-463E-AFBE-DF8440675111}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EE543950-3515-4431-91DF-0E41A9904BF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE543950-3515-4431-91DF-0E41A9904BF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE543950-3515-4431-91DF-0E41A9904BF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE543950-3515-4431-91DF-0E41A9904BF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05C19291-C93A-40D2-88C5-D2735EDA2B46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05C19291-C93A-40D2-88C5-D2735EDA2B46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05C19291-C93A-40D2-88C5-D2735EDA2B46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05C19291-C93A-40D2-88C5-D2735EDA2B46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{703B2099-8AEB-463E-AFBE-DF8440675111}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{703B2099-8AEB-463E-AFBE-DF8440675111}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{703B2099-8AEB-463E-AFBE-DF8440675111}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{703B2099-8AEB-463E-AFBE-DF8440675111}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {087A3552-685B-4E5C-89F0-E5FE559D6005}
+	EndGlobalSection
+EndGlobal

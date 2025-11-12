@@ -1,0 +1,93 @@
+﻿@model ToDoApp.Models.ViewModels.TaskDetailsViewModel
+@{
+    ViewData["Title"] = "Task Details";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h2>Task Details: @Model.Task.Title</h2>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-sm-3"><strong>Description:</strong></div>
+            <div class="col-sm-9">
+                @(string.IsNullOrEmpty(Model.Task.Description) ? "No description provided" : Model.Task.Description)
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-sm-3"><strong>Assigned to:</strong></div>
+            <div class="col-sm-9">
+                @if (Model.Task.Employee != null)
+                {
+                    <a asp-controller="Employees" asp-action="Details" asp-route-id="@Model.Task.Employee.Id">
+                        @Model.Task.Employee.FirstName @Model.Task.Employee.LastName
+                    </a>
+                }
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-sm-3"><strong>Status:</strong></div>
+            <div class="col-sm-9">
+                @if (Model.Task.IsCompleted)
+                {
+                    <span class="badge bg-success">Completed</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning text-dark">Not Completed</span>
+                }
+            </div>
+        </div>
+        <div class="mt-4">
+            @if (User.IsInRole(UserRole.Admin))
+            {
+                <a asp-action="Edit" asp-route-id="@Model.Task.Id" class="btn btn-warning">Edit</a>
+            }
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+</div>
+<div class="card mt-4">
+    <div class="card-header">
+        <h4>Comments</h4>
+    </div>
+    <div class="card-body">
+        <div class="comments-list mb-3" style="max-height: 400px; overflow-y: auto;">
+            @if (Model.Comments.Any())
+            {
+                @foreach (var comment in Model.Comments.OrderBy(c => c.Timestamp))
+                {
+                    var isCurrentUser = comment.AuthorUsername == User.Identity?.Name;
+                    <div class="d-flex @(isCurrentUser ? "justify-content-end" : "") mb-2">
+                        <div class="card @(isCurrentUser ? "bg-primary text-white" : "bg-light")" style="max-width: 75%;">
+                            <div class="card-body p-2">
+                                <p class="card-text mb-1">@comment.Content</p>
+                                <small class="text-muted @(isCurrentUser ? "text-white-50" : "")">
+                                    <strong>@comment.AuthorUsername</strong> - @comment.Timestamp.ToLocalTime().ToString("g")
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No comments yet. Be the first to comment!</p>
+            }
+        </div>
+
+        <hr />
+
+        <form asp-action="AddComment" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="taskId" value="@Model.Task.Id" />
+            <div class="form-group">
+                <label for="content" class="form-label">Add a comment:</label>
+                <textarea name="content" class="form-control" rows="3" required></textarea>
+            </div>
+            <div class="form-group mt-2">
+                <button type="submit" class="btn btn-primary">Submit Comment</button>
+            </div>
+        </form>
+    </div>
+</div>
