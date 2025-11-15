@@ -20,11 +20,11 @@ namespace Tests
 
         // Test case for successful user registration.
         [Fact]
-        public async Task Register_ValidUser_ReturnsOkResult()
+        public async Task RegisterAsync_ValidUser_ReturnsOkResult()
         {
             var registerModel = new RegisterModel { Username = "test", Password = "password123", Email = "test@test.com" };
-            _mockAuthService.Setup(s => s.Register(It.IsAny<RegisterModel>())).ReturnsAsync(true);
-            var result = await _controller.Register(registerModel);
+            _mockAuthService.Setup(s => s.RegisterAsync(It.IsAny<RegisterModel>())).ReturnsAsync(true);
+            var result = await _controller.RegisterAsync(registerModel);
             var okResult = Assert.IsType<OkObjectResult>(result);
             var value = okResult.Value;
             Assert.NotNull(value);
@@ -37,35 +37,35 @@ namespace Tests
 
         // Test case for registration failure when the username already exists.
         [Fact]
-        public async Task Register_ExistingUser_ReturnsBadRequest()
+        public async Task RegisterAsync_ExistingUser_ReturnsBadRequest()
         {
             var registerModel = new RegisterModel { Username = "existing", Password = "password123", Email = "test@test.com" };
-            _mockAuthService.Setup(s => s.Register(It.IsAny<RegisterModel>())).ThrowsAsync(new Exception("Username already exists"));
+            _mockAuthService.Setup(s => s.RegisterAsync(It.IsAny<RegisterModel>())).ThrowsAsync(new Exception("Username already exists"));
 
-            var result = await _controller.Register(registerModel);
+            var result = await _controller.RegisterAsync(registerModel);
 
             Assert.IsType<BadRequestObjectResult>(result);
         }
 
         // Test case for successful user login with valid credentials.
         [Fact]
-        public async Task Login_ValidCredentials_ReturnsOkResult()
+        public async Task LoginAsync_ValidCredentials_ReturnsOkResult()
         {
             var loginModel = new LoginModel { Username = "test", Password = "password123" };
             var tokenResponse = new TokenResponse { Token = "valid-token", Expiration = DateTime.UtcNow.AddHours(1) };
-            _mockAuthService.Setup(s => s.Login(It.IsAny<LoginModel>())).ReturnsAsync(tokenResponse);
-            var result = await _controller.Login(loginModel);
+            _mockAuthService.Setup(s => s.LoginAsync(It.IsAny<LoginModel>())).ReturnsAsync(tokenResponse);
+            var result = await _controller.LoginAsync(loginModel);
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.IsType<TokenResponse>(okResult.Value);
         }
 
         // Test case for login failure with invalid credentials.
         [Fact]
-        public async Task Login_InvalidCredentials_ReturnsUnauthorized()
+        public async Task LoginAsync_InvalidCredentials_ReturnsUnauthorized()
         {
             var loginModel = new LoginModel { Username = "invalid", Password = "wrong" };
-            _mockAuthService.Setup(s => s.Login(It.IsAny<LoginModel>())).ThrowsAsync(new Exception("Invalid credentials"));
-            var result = await _controller.Login(loginModel);
+            _mockAuthService.Setup(s => s.LoginAsync(It.IsAny<LoginModel>())).ThrowsAsync(new Exception("Invalid credentials"));
+            var result = await _controller.LoginAsync(loginModel);
             Assert.IsType<UnauthorizedObjectResult>(result);
         }
     }

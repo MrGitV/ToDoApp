@@ -15,7 +15,7 @@ namespace ToDoApp.Controllers
         private readonly INotificationService _notificationService = notificationService;
 
         // Displays a list of tasks, filtered by user role.
-        public async Task<IActionResult> Index(string searchTitle, string searchDescription, bool? isCompleted)
+        public async Task<IActionResult> IndexAsync(string searchTitle, string searchDescription, bool? isCompleted)
         {
             IEnumerable<ToDoTask> tasks;
             var username = User.Identity?.Name;
@@ -42,7 +42,7 @@ namespace ToDoApp.Controllers
         }
 
         // Shows details for a specific task, including comments.
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> DetailsAsync(int id)
         {
             var task = await _taskService.GetTaskByIdAsync(id);
             if (task == null) return NotFound();
@@ -77,7 +77,7 @@ namespace ToDoApp.Controllers
         // Adds a new comment to a task and notifies the relevant user.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddComment(int taskId, string content)
+        public async Task<IActionResult> AddCommentAsync(int taskId, string content)
         {
             if (string.IsNullOrWhiteSpace(content))
             {
@@ -117,7 +117,7 @@ namespace ToDoApp.Controllers
 
         // Displays the form to create a new task.
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> Create(int? employeeId = null)
+        public async Task<IActionResult> CreateAsync(int? employeeId = null)
         {
             ViewBag.Employees = await _employeeService.GetAllEmployeesAsync();
             ViewBag.EmployeeId = employeeId;
@@ -128,7 +128,7 @@ namespace ToDoApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> Create(ToDoTask task)
+        public async Task<IActionResult> CreateAsync(ToDoTask task)
         {
             if (ModelState.IsValid)
             {
@@ -144,7 +144,7 @@ namespace ToDoApp.Controllers
                     );
                 }
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(IndexAsync));
             }
             ViewBag.Employees = await _employeeService.GetAllEmployeesAsync();
             return View(task);
@@ -152,7 +152,7 @@ namespace ToDoApp.Controllers
 
         // Displays the form to edit a task.
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> EditAsync(int id)
         {
             var task = await _taskService.GetTaskByIdAsync(id);
             if (task == null)
@@ -167,7 +167,7 @@ namespace ToDoApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> Edit(int id, ToDoTask task)
+        public async Task<IActionResult> EditAsync(int id, ToDoTask task)
         {
             if (id != task.Id)
             {
@@ -182,7 +182,7 @@ namespace ToDoApp.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await TaskExists(task.Id))
+                    if (!await TaskExistsAsync(task.Id))
                     {
                         return NotFound();
                     }
@@ -191,7 +191,7 @@ namespace ToDoApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(IndexAsync));
             }
             ViewBag.Employees = await _employeeService.GetAllEmployeesAsync();
             return View(task);
@@ -199,7 +199,7 @@ namespace ToDoApp.Controllers
 
         // Displays the confirmation page for deleting a task.
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             var task = await _taskService.GetTaskByIdAsync(id);
             if (task == null)
@@ -213,14 +213,14 @@ namespace ToDoApp.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmedAsync(int id)
         {
             await _taskService.DeleteTaskAsync(id);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(IndexAsync));
         }
 
         // Checks if a task with the given ID exists.
-        private async Task<bool> TaskExists(int id)
+        private async Task<bool> TaskExistsAsync(int id)
         {
             return await _taskService.GetTaskByIdAsync(id) != null;
         }

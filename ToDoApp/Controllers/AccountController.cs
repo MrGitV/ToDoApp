@@ -35,7 +35,7 @@ namespace ToDoApp.Controllers
         // Handles user login by calling the AuthAPI.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> LoginAsync(LoginViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -92,7 +92,7 @@ namespace ToDoApp.Controllers
         // Logs the user out and clears the session cookie.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> LogoutAsync()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Account");

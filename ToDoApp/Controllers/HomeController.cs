@@ -14,7 +14,7 @@ namespace ToDoApp.Controllers
         private readonly ITaskService _taskService = taskService;
 
         // Displays the main dashboard for either Admin or Employee.
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> IndexAsync()
         {
             if (User.IsInRole(UserRole.Admin))
             {

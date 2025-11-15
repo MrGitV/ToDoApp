@@ -11,7 +11,7 @@ namespace ToDoApp.Services
         Task CreateEmployeeAsync(Employee employee);
         Task UpdateEmployeeAsync(Employee employee);
         Task DeleteEmployeeAsync(int id);
-        Task<bool> EmployeeExists(int id);
+        Task<bool> EmployeeExistsAsync(int id);
         Task<IEnumerable<Employee>> SearchEmployeesAsync(string searchTerm);
     }
 }

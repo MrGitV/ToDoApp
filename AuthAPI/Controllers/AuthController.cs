@@ -12,11 +12,11 @@ namespace AuthAPI.Controllers
 
         // Handles new user registration.
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterModel model)
+        public async Task<IActionResult> RegisterAsync(RegisterModel model)
         {
             try
             {
-                var result = await _authService.Register(model);
+                var result = await _authService.RegisterAsync(model);
                 return Ok(new { success = result });
             }
             catch (Exception ex)
@@ -27,11 +27,11 @@ namespace AuthAPI.Controllers
 
         // Authenticates a user and returns a JWT.
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginModel model)
+        public async Task<IActionResult> LoginAsync(LoginModel model)
         {
             try
             {
-                var token = await _authService.Login(model);
+                var token = await _authService.LoginAsync(model);
                 return Ok(token);
             }
             catch (Exception ex)

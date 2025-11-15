@@ -1,0 +1,990 @@
+{
+	"info": {
+		"_postman_id": "9f84a210-62e9-4d3b-bcb5-91da0507ef47",
+		"name": "ToDoApp Integration Tests",
+		"description": "Comprehensive integration tests for ToDoApp including authentication, employee management, task management, and notifications",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49059038",
+		"_collection_link": "https://prostakov-vova-9965917.postman.co/workspace/%D0%92%D0%BB%D0%B0%D0%B4%D0%B8%D0%BC%D0%B8%D1%80-%D0%9F%D1%80%D0%BE%D1%81%D1%82%D0%B0%D0%BA%D0%BE%D0%B2's-Workspace~0087fc05-e0ad-48bc-8f7a-6cf97735fe66/collection/49059038-9f84a210-62e9-4d3b-bcb5-91da0507ef47?action=share&source=collection_link&creator=49059038"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register New User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test registration response\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response has success property\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.have.property('success');\n    pm.expect(jsonData.success).to.be.true;\n});\n\n// Save test user credentials for cleanup\npm.environment.set(\"test_user_username\", \"testuser\");\npm.environment.set(\"test_user_password\", \"TestPassword123!\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"TestPassword123!\",\n    \"email\": \"testuser@todoapp.com\",\n    \"role\": \"Employee\"\n}"
+						},
+						"url": {
+							"raw": "{{auth_api_url}}/api/auth/register",
+							"host": [
+								"{{auth_api_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Admin User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test login response\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response has token\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.have.property('token');\n    pm.expect(jsonData.token).to.be.a('string');\n    pm.expect(jsonData.token).to.not.be.empty;\n});\n\npm.test(\"Response has expiration\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.have.property('expiration');\n    pm.expect(new Date(jsonData.expiration)).to.be.above(new Date());\n});\n\npm.test(\"Response has username and role\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.have.property('username', 'admin');\n    pm.expect(jsonData).to.have.property('role', 'Admin');\n});\n\n// Save admin token for subsequent requests\npm.environment.set(\"admin_token\", jsonData.token);\npm.environment.set(\"admin_username\", jsonData.username);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{auth_api_url}}/api/auth/login",
+							"host": [
+								"{{auth_api_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Employee User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test login response\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response has token\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.have.property('token');\n    pm.expect(jsonData.token).to.be.a('string');\n    pm.expect(jsonData.token).to.not.be.empty;\n});\n\n// Save employee token for subsequent requests\npm.environment.set(\"employee_token\", jsonData.token);\npm.environment.set(\"employee_username\", jsonData.username);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"ivanov\",\n    \"password\": \"password1\"\n}"
+						},
+						"url": {
+							"raw": "{{auth_api_url}}/api/auth/login",
+							"host": [
+								"{{auth_api_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login with Invalid Credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test invalid login response\npm.test(\"Status code is 401\", function () {\n    pm.response.to.have.status(401);\n});\n\npm.test(\"Response has error message\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.have.property('error');\n    pm.expect(jsonData.error).to.include('Invalid credentials');\n});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"invalid_user\",\n    \"password\": \"wrong_password\"\n}"
+						},
+						"url": {
+							"raw": "{{auth_api_url}}/api/auth/login",
+							"host": [
+								"{{auth_api_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "User authentication endpoints"
+		},
+		{
+			"name": "Employees",
+			"item": [
+				{
+					"name": "Get All Employees",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test get all employees response\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is an array\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.be.an('array');\n});\n\npm.test(\"Response has at least one employee\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData.length).to.be.above(0);\n});\n\n// Save first employee ID for subsequent tests\nif (jsonData.length > 0) {\n    pm.environment.set(\"first_employee_id\", jsonData[0].id);\n}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{todo_api_url}}/api/employees",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"employees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employee by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test get employee by ID response\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response has employee properties\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.have.property('id');\n    pm.expect(jsonData).to.have.property('firstName');\n    pm.expect(jsonData).to.have.property('lastName');\n    pm.expect(jsonData).to.have.property('username');\n    pm.expect(jsonData).to.have.property('specialty');\n    pm.expect(jsonData).to.have.property('dateOfBirth');\n    pm.expect(jsonData).to.have.property('hireDate');\n});\n\n// Save employee username for task assignment\npm.environment.set(\"employee_username\", jsonData.username);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{todo_api_url}}/api/employees/{{first_employee_id}}",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								"{{first_employee_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test create employee response\npm.test(\"Status code is 200 or 201\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\n});\n\npm.test(\"Response has employee data\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.have.property('id');\n    pm.expect(jsonData).to.have.property('username', 'testemployee');\n});\n\n// Save created employee ID for cleanup\npm.environment.set(\"created_employee_id\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Ensure we have admin token\nif (!pm.environment.get(\"admin_token\")) {\n    console.log(\"Admin token not found, please run authentication tests first\");\n}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Test\",\n    \"lastName\": \"Employee\",\n    \"username\": \"testemployee\",\n    \"dateOfBirth\": \"1990-01-01\",\n    \"specialty\": \"Software Developer\",\n    \"hireDate\": \"2023-01-01\"\n}"
+						},
+						"url": {
+							"raw": "{{todo_api_url}}/api/employees",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"employees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test update employee response\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response has updated employee data\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.have.property('specialty', 'Senior Developer');\n    pm.expect(jsonData).to.have.property('firstName', 'Updated');\n});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": {{created_employee_id}},\n    \"firstName\": \"Updated\",\n    \"lastName\": \"Employee\",\n    \"username\": \"testemployee\",\n    \"dateOfBirth\": \"1990-01-01\",\n    \"specialty\": \"Senior Developer\",\n    \"hireDate\": \"2023-01-01\"\n}"
+						},
+						"url": {
+							"raw": "{{todo_api_url}}/api/employees/{{created_employee_id}}",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								"{{created_employee_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test delete employee response\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\n// Clear the created employee ID\npm.environment.unset(\"created_employee_id\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{todo_api_url}}/api/employees/{{created_employee_id}}",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"employees",
+								"{{created_employee_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Employees as Employee (Forbidden)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test forbidden access\npm.test(\"Status code is 403\", function () {\n    pm.response.to.have.status(403);\n});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{employee_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{todo_api_url}}/api/employees",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"employees"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Employee management endpoints (Admin only)"
+		},
+		{
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "Get All Tasks (Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test get all tasks response\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is an array\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.be.an('array');\n});\n\n// Save first task ID for subsequent tests\nif (jsonData.length > 0) {\n    pm.environment.set(\"first_task_id\", jsonData[0].id);\n}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{todo_api_url}}/api/tasks",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Tasks by Employee (Employee)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test get employee tasks response\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is an array\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.be.an('array');\n});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{employee_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{todo_api_url}}/api/tasks",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test create task response\npm.test(\"Status code is 200 or 201\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\n});\n\npm.test(\"Response has task data\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.have.property('id');\n    pm.expect(jsonData).to.have.property('title', 'Integration Test Task');\n    pm.expect(jsonData).to.have.property('employeeId', {{first_employee_id}});\n});\n\n// Save created task ID for cleanup\npm.environment.set(\"created_task_id\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Integration Test Task\",\n    \"description\": \"This task was created by Postman integration tests\",\n    \"isCompleted\": false,\n    \"employeeId\": {{first_employee_id}}\n}"
+						},
+						"url": {
+							"raw": "{{todo_api_url}}/api/tasks",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Task by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test get task by ID response\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response has task properties\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.have.property('id', {{created_task_id}});\n    pm.expect(jsonData).to.have.property('title', 'Integration Test Task');\n    pm.expect(jsonData).to.have.property('description');\n    pm.expect(jsonData).to.have.property('isCompleted', false);\n    pm.expect(jsonData).to.have.property('employeeId');\n});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{todo_api_url}}/api/tasks/{{created_task_id}}",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"{{created_task_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test update task response\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response has updated task data\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.have.property('title', 'Updated Test Task');\n    pm.expect(jsonData).to.have.property('isCompleted', true);\n});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": {{created_task_id}},\n    \"title\": \"Updated Test Task\",\n    \"description\": \"This task was updated by Postman integration tests\",\n    \"isCompleted\": true,\n    \"employeeId\": {{first_employee_id}}\n}"
+						},
+						"url": {
+							"raw": "{{todo_api_url}}/api/tasks/{{created_task_id}}",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"{{created_task_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Comment to Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test add comment response\npm.test(\"Status code is 200 or 201\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\n});\n\npm.test(\"Response has comment data\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.have.property('id');\n    pm.expect(jsonData).to.have.property('content', 'This is a test comment from Postman');\n    pm.expect(jsonData).to.have.property('taskId', {{created_task_id}});\n});\n\n// Save comment ID for reference\npm.environment.set(\"created_comment_id\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"This is a test comment from Postman\",\n    \"taskId\": {{created_task_id}},\n    \"authorUsername\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "{{todo_api_url}}/api/tasks/{{created_task_id}}/comments",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"{{created_task_id}}",
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Task",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test delete task response\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\n// Clear the created task ID\npm.environment.unset(\"created_task_id\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{todo_api_url}}/api/tasks/{{created_task_id}}",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"{{created_task_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Task as Employee (Forbidden)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test forbidden task creation\npm.test(\"Status code is 403\", function () {\n    pm.response.to.have.status(403);\n});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{employee_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Unauthorized Task\",\n    \"description\": \"Should not be created\",\n    \"isCompleted\": false,\n    \"employeeId\": {{first_employee_id}}\n}"
+						},
+						"url": {
+							"raw": "{{todo_api_url}}/api/tasks",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Task management endpoints"
+		},
+		{
+			"name": "Notifications",
+			"item": [
+				{
+					"name": "Get Unread Notifications",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test get notifications response\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response is an array\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData).to.be.an('array');\n});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{employee_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{todo_api_url}}/api/notifications/unread",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"notifications",
+								"unread"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Notification endpoints"
+		},
+		{
+			"name": "Performance Tests",
+			"item": [
+				{
+					"name": "Concurrent Login Requests",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Performance test for login\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response time is less than 500ms\", function () {\n    pm.expect(pm.response.responseTime).to.be.below(500);\n});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"ivanov\",\n    \"password\": \"password1\"\n}"
+						},
+						"url": {
+							"raw": "{{auth_api_url}}/api/auth/login",
+							"host": [
+								"{{auth_api_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Concurrent Task List Requests",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Performance test for task listing\npm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});\n\npm.test(\"Response time is less than 1000ms\", function () {\n    pm.expect(pm.response.responseTime).to.be.below(1000);\n});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{employee_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{todo_api_url}}/api/tasks",
+							"host": [
+								"{{todo_api_url}}"
+							],
+							"path": [
+								"api",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Basic performance and load testing scenarios"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{admin_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "auth_api_url",
+			"value": "https://localhost:7001"
+		},
+		{
+			"key": "todo_api_url",
+			"value": "https://localhost:5001"
+		},
+		{
+			"key": "admin_token",
+			"value": ""
+		},
+		{
+			"key": "employee_token",
+			"value": ""
+		},
+		{
+			"key": "first_employee_id",
+			"value": "1"
+		},
+		{
+			"key": "created_employee_id",
+			"value": ""
+		},
+		{
+			"key": "created_task_id",
+			"value": ""
+		},
+		{
+			"key": "admin_username",
+			"value": "admin"
+		},
+		{
+			"key": "employee_username",
+			"value": "ivanov"
+		},
+		{
+			"key": "test_user_username",
+			"value": ""
+		}
+	]
+}

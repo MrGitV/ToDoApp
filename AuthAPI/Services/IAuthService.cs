@@ -4,8 +4,8 @@ namespace AuthAPI.Services
 {
     public interface IAuthService
     {
-        Task<TokenResponse> Login(LoginModel model);
-        Task<bool> Register(RegisterModel model);
-        Task<bool> UserExists(string username);
+        Task<TokenResponse> LoginAsync(LoginModel model);
+        Task<bool> RegisterAsync(RegisterModel model);
+        Task<bool> UserExistsAsync(string username);
     }
 }

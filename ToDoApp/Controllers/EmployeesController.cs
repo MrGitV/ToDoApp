@@ -12,7 +12,7 @@ namespace ToDoApp.Controllers
         private readonly IEmployeeService _employeeService = employeeService;
 
         // Displays a list of all employees with filtering.
-        public async Task<IActionResult> Index(string searchName, string searchSpecialty)
+        public async Task<IActionResult> IndexAsync(string searchName, string searchSpecialty)
         {
             var employees = await _employeeService.GetAllEmployeesAsync(searchName, searchSpecialty);
             ViewBag.SearchName = searchName;
@@ -22,7 +22,7 @@ namespace ToDoApp.Controllers
 
         // Serves the employee's avatar image.
         [AllowAnonymous]
-        public async Task<IActionResult> GetAvatar(int id)
+        public async Task<IActionResult> GetAvatarAsync(int id)
         {
             var employee = await _employeeService.GetEmployeeByIdAsync(id);
             if (employee?.AvatarImage != null && employee.AvatarImageType != null)
@@ -33,7 +33,7 @@ namespace ToDoApp.Controllers
         }
 
         // Shows details for a specific employee.
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> DetailsAsync(int id)
         {
             var employee = await _employeeService.GetEmployeeByIdAsync(id);
             if (employee == null) return NotFound();
@@ -49,7 +49,7 @@ namespace ToDoApp.Controllers
         // Handles the creation of a new employee.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Employee employee, IFormFile? avatarFile)
+        public async Task<IActionResult> CreateAsync(Employee employee, IFormFile? avatarFile)
         {
             if (avatarFile != null && avatarFile.Length > 0)
             {
@@ -62,13 +62,13 @@ namespace ToDoApp.Controllers
             if (ModelState.IsValid)
             {
                 await _employeeService.CreateEmployeeAsync(employee);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(IndexAsync));
             }
             return View(employee);
         }
 
         // Displays the form to edit an employee.
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> EditAsync(int id)
         {
             var employee = await _employeeService.GetEmployeeByIdAsync(id);
             if (employee == null) return NotFound();
@@ -78,7 +78,7 @@ namespace ToDoApp.Controllers
         // Handles updating an employee's details.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Employee employeeFormData, IFormFile? avatarFile)
+        public async Task<IActionResult> EditAsync(int id, Employee employeeFormData, IFormFile? avatarFile)
         {
             if (id != employeeFormData.Id)
             {
@@ -114,7 +114,7 @@ namespace ToDoApp.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _employeeService.EmployeeExists(employeeToUpdate.Id))
+                    if (!await _employeeService.EmployeeExistsAsync(employeeToUpdate.Id))
                     {
                         return NotFound();
                     }
@@ -123,14 +123,14 @@ namespace ToDoApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(IndexAsync));
             }
 
             return View(employeeToUpdate);
         }
 
         // Displays the confirmation page for deleting an employee.
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             var employee = await _employeeService.GetEmployeeByIdAsync(id);
             if (employee == null) return NotFound();
@@ -140,10 +140,10 @@ namespace ToDoApp.Controllers
         // Deletes the specified employee.
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmedAsync(int id)
         {
             await _employeeService.DeleteEmployeeAsync(id);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(IndexAsync));
         }
     }
 }

@@ -89,7 +89,7 @@ namespace ToDoApp.Services
         }
 
         // Checks if an employee exists with the given ID.
-        public async Task<bool> EmployeeExists(int id)
+        public async Task<bool> EmployeeExistsAsync(int id)
         {
             return await _context.Employees.AnyAsync(e => e.Id == id);
         }

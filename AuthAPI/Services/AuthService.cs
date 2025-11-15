@@ -14,7 +14,7 @@ namespace AuthAPI.Services
         private readonly IConfiguration _configuration = configuration;
 
         // Validates user credentials and generates a JWT.
-        public async Task<TokenResponse> Login(LoginModel model)
+        public async Task<TokenResponse> LoginAsync(LoginModel model)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
             if (user == null || !VerifyPassword(model.Password, user.PasswordHash))
@@ -50,9 +50,9 @@ namespace AuthAPI.Services
         }
 
         // Creates a new user with a hashed password.
-        public async Task<bool> Register(RegisterModel model)
+        public async Task<bool> RegisterAsync(RegisterModel model)
         {
-            if (await UserExists(model.Username))
+            if (await UserExistsAsync(model.Username))
             {
                 throw new Exception("Username already exists");
             }
@@ -71,7 +71,7 @@ namespace AuthAPI.Services
         }
 
         // Checks if a username is already taken.
-        public async Task<bool> UserExists(string username)
+        public async Task<bool> UserExistsAsync(string username)
         {
             return await _context.Users.AnyAsync(u => u.Username == username);
         }
