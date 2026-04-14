@@ -5,5 +5,6 @@
         public int TotalEmployees { get; set; }
         public int TotalTasks { get; set; }
         public int PendingTasks { get; set; }
+        public int FailedTasks { get; set; }
     }
 }

@@ -19,6 +19,11 @@ namespace ToDoApp.Data
             var employees = new Employee[]
             {
                 new() {
+                    Username = "admin", FirstName = "System", LastName = "Administrator", DateOfBirth = new DateTime(1985, 5, 20),
+                    Specialty = "General Manager", HireDate = new DateTime(2015, 1, 1),
+                    AvatarImage = ReadImage("default-avatar.png"), AvatarImageType = "image/png"
+                },
+                new() {
                     Username = "ivanov", FirstName = "Ivan", LastName = "Ivanov", DateOfBirth = new DateTime(1988, 5, 20),
                     Specialty = "Software Developer", HireDate = new DateTime(2020, 1, 15),
                     AvatarImage = ReadImage("1.png"), AvatarImageType = "image/png"
@@ -44,12 +49,12 @@ namespace ToDoApp.Data
 
             var tasks = new ToDoTask[]
             {
-                new() { Title = "Develop user authentication", IsCompleted = true, EmployeeId = employees[0].Id },
-                new() { Title = "Design homepage layout", IsCompleted = false, EmployeeId = employees[1].Id },
-                new() { Title = "Project planning meeting", IsCompleted = true, EmployeeId = employees[2].Id },
-                new() { Title = "Write test cases", IsCompleted = false, EmployeeId = employees[3].Id },
-                new() { Title = "API integration", IsCompleted = false, EmployeeId = employees[0].Id },
-                new() { Title = "User feedback analysis", IsCompleted = true, EmployeeId = employees[1].Id }
+                new() { Title = "Develop user authentication", IsCompleted = true, EmployeeId = employees[0].Id, DueDate = DateTime.Now.AddDays(-5) },
+                new() { Title = "Design homepage layout", IsCompleted = false, EmployeeId = employees[1].Id, DueDate = DateTime.Now.AddDays(3) },
+                new() { Title = "Project planning meeting", IsCompleted = false, EmployeeId = employees[2].Id, DueDate = DateTime.Now.AddDays(-2) },
+                new() { Title = "Write test cases", IsCompleted = false, EmployeeId = employees[3].Id, DueDate = DateTime.Now.AddDays(5) },
+                new() { Title = "API integration", IsCompleted = false, EmployeeId = employees[0].Id, DueDate = DateTime.Now.AddDays(1) },
+                new() { Title = "User feedback analysis", IsCompleted = true, EmployeeId = employees[1].Id, DueDate = DateTime.Now.AddDays(-1) }
             };
             context.Tasks.AddRange(tasks);
             context.SaveChanges();

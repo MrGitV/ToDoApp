@@ -13,8 +13,7 @@ namespace ToDoApp.Controllers
         private readonly IEmployeeService _employeeService = employeeService;
         private readonly ITaskService _taskService = taskService;
 
-        // Displays the main dashboard for either Admin or Employee.
-        public async Task<IActionResult> IndexAsync()
+        public async Task<IActionResult> Index()
         {
             if (User.IsInRole(UserRole.Admin))
             {
@@ -24,7 +23,8 @@ namespace ToDoApp.Controllers
                 {
                     TotalEmployees = allEmployees.Count(),
                     TotalTasks = allTasks.Count(),
-                    PendingTasks = allTasks.Count(t => !t.IsCompleted)
+                    PendingTasks = allTasks.Count(t => !t.IsCompleted && !t.IsOverdue),
+                    FailedTasks = allTasks.Count(t => t.IsOverdue)
                 };
                 return View(adminViewModel);
             }
@@ -39,13 +39,13 @@ namespace ToDoApp.Controllers
             var employeeViewModel = new DashboardViewModel
             {
                 TotalTasks = employeeTasks.Count(),
-                PendingTasks = employeeTasks.Count(t => !t.IsCompleted)
+                PendingTasks = employeeTasks.Count(t => !t.IsCompleted && !t.IsOverdue),
+                FailedTasks = employeeTasks.Count(t => t.IsOverdue)
             };
 
             return View("Index_Employee", employeeViewModel);
         }
 
-        // Displays a generic error page.
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

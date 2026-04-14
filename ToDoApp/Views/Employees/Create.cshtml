@@ -4,8 +4,8 @@
 }
 
 <div class="card shadow-sm">
-    <div class="card-header">
-        <h2>Create New Employee</h2>
+    <div class="card-header bg-primary text-white">
+        <h2 class="h4 mb-0"><i class="bi bi-person-plus-fill"></i> Create New Employee</h2>
     </div>
     <div class="card-body">
         <form asp-action="Create" method="post" enctype="multipart/form-data">
@@ -14,44 +14,55 @@
 
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label asp-for="FirstName" class="form-label"></label>
+                    <label asp-for="FirstName" class="form-label fw-bold"></label>
                     <input asp-for="FirstName" class="form-control" required />
                     <span asp-validation-for="FirstName" class="text-danger"></span>
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="LastName" class="form-label"></label>
+                    <label asp-for="LastName" class="form-label fw-bold"></label>
                     <input asp-for="LastName" class="form-control" required />
                     <span asp-validation-for="LastName" class="text-danger"></span>
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="Username" class="form-label"></label>
+                    <label asp-for="Username" class="form-label fw-bold"></label>
                     <input asp-for="Username" class="form-control" required />
                     <span asp-validation-for="Username" class="text-danger"></span>
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="DateOfBirth" class="form-label"></label>
+                    <label asp-for="DateOfBirth" class="form-label fw-bold"></label>
                     <input asp-for="DateOfBirth" class="form-control" type="date" required />
                     <span asp-validation-for="DateOfBirth" class="text-danger"></span>
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="Specialty" class="form-label"></label>
+                    <label asp-for="Specialty" class="form-label fw-bold"></label>
                     <input asp-for="Specialty" class="form-control" required />
                     <span asp-validation-for="Specialty" class="text-danger"></span>
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="HireDate" class="form-label"></label>
+                    <label asp-for="HireDate" class="form-label fw-bold"></label>
                     <input asp-for="HireDate" class="form-control" type="date" required />
                     <span asp-validation-for="HireDate" class="text-danger"></span>
                 </div>
                 <div class="col-12">
-                    <label for="avatarFile" class="form-label">Avatar Image</label>
+                    <label for="avatarFile" class="form-label fw-bold">Avatar Image</label>
                     <input type="file" name="avatarFile" id="avatarFile" class="form-control" accept="image/*" />
+                </div>
+                <div class="col-md-12 mt-4 p-3 border rounded bg-light dark-mode-adaptive">
+                    <label class="form-label fw-bold"><i class="bi bi-shield-lock-fill text-success"></i> Temporary Password (For AuthAPI)</label>
+                    <div class="input-group mb-2">
+                        <input type="password" id="InputPassword" name="TempPassword" class="form-control" autocomplete="new-password" required />
+                        <button class="btn btn-outline-secondary" type="button" id="btn-generate-pwd">Generate</button>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div id="password-strength-meter" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+                    </div>
+                    <small id="password-strength-text" class="text-muted">Enter a password</small>
                 </div>
             </div>
 
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary">Create</button>
-                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            <div class="mt-4 text-end">
+                <a asp-action="Index" class="btn btn-secondary me-2"><i class="bi bi-x-circle"></i> Cancel</a>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Create</button>
             </div>
         </form>
     </div>
@@ -61,4 +72,5 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script src="~/js/password-security.js"></script>
 }

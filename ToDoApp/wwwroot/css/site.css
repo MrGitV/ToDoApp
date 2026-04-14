@@ -12,7 +12,7 @@ body {
     border: none;
     border-radius: 0.5rem;
     box-shadow: 0 4px 12px rgba(0,0,0,.08);
-    transition: all 0.2s ease-in-out;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card-header {
@@ -66,4 +66,133 @@ body {
 .form-control:focus {
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
     border-color: #80bdff;
+}
+
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+    body.dark-mode {
+        background-color: #121212 !important;
+        color: #e0e0e0 !important;
+    }
+
+        body.dark-mode .navbar {
+            background-color: #1a1a1a !important;
+            border-bottom: 1px solid #2d2d2d !important;
+        }
+
+        body.dark-mode .card:not(.bg-primary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info) {
+            background-color: #1e1e1e !important;
+            border-color: #333 !important;
+        }
+
+            body.dark-mode .card:not(.bg-primary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info) > .card-body,
+            body.dark-mode p:not(.text-white),
+            body.dark-mode dl dt,
+            body.dark-mode dl dd {
+                color: #e0e0e0 !important;
+            }
+
+            body.dark-mode .card:not(.bg-primary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info) > .card-header {
+                background-color: #2a2a2a !important;
+                border-bottom-color: #444 !important;
+                color: #64b5f6 !important;
+            }
+
+        body.dark-mode .text-white {
+            color: #ffffff !important;
+        }
+
+        body.dark-mode .bg-warning {
+            color: #000000 !important;
+            background-color: #ffc107 !important;
+        }
+
+        body.dark-mode .badge.bg-warning {
+            color: #000000 !important;
+        }
+
+        body.dark-mode .btn-outline-warning {
+            color: #ffc107 !important;
+            border-color: #ffc107 !important;
+        }
+
+            body.dark-mode .btn-outline-warning:hover {
+                color: #000000 !important;
+                background-color: #ffc107 !important;
+            }
+
+        /* Inputs and Forms */
+        body.dark-mode .form-control,
+        body.dark-mode .form-select,
+        body.dark-mode .input-group-text {
+            background-color: #2c2c2c !important;
+            color: #e0e0e0 !important;
+            border-color: #555 !important;
+        }
+
+            body.dark-mode .form-control:focus {
+                background-color: #333 !important;
+                color: #fff !important;
+                border-color: #64b5f6 !important;
+            }
+
+            /* Readonly fields */
+            body.dark-mode .form-control[readonly],
+            body.dark-mode .bg-light {
+                background-color: #222 !important;
+                border-color: #444 !important;
+                color: #aaa !important;
+            }
+
+        /* Tables in Dark Mode */
+        body.dark-mode .table {
+            color: #e0e0e0 !important;
+        }
+
+            body.dark-mode .table-light,
+            body.dark-mode .table thead th {
+                background-color: #2a2a2a !important;
+                color: #e0e0e0 !important;
+                border-color: #444 !important;
+            }
+
+        body.dark-mode .table-hover tbody tr:hover {
+            background-color: #333 !important;
+            color: #fff !important;
+        }
+
+        body.dark-mode td {
+            border-color: #444 !important;
+        }
+
+        /* Modals and Dropdowns */
+        body.dark-mode .dropdown-menu,
+        body.dark-mode .modal-content {
+            background-color: #2c2c2c !important;
+            border-color: #444 !important;
+        }
+
+        body.dark-mode .dropdown-item {
+            color: #e0e0e0 !important;
+        }
+
+            body.dark-mode .dropdown-item:hover {
+                background-color: #3d3d3d !important;
+                color: #fff !important;
+            }
+
+/* Table sorting cursor */
+th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+    th.sortable:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+    }
+
+body.dark-mode th.sortable:hover {
+    background-color: rgba(100, 181, 246, 0.2);
 }

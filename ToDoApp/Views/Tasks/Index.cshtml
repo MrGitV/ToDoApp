@@ -4,66 +4,83 @@
     ViewData["Title"] = "Tasks List";
 }
 
-<div class="card">
-    <div class="card-header">
-        <h2>Tasks</h2>
-    </div>
-    <div class="card-body">
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h2 class="mb-0"><i class="bi bi-list-task"></i> Tasks</h2>
         @if (User.IsInRole(UserRole.Admin))
         {
-            <p>
-                <a asp-action="Create" class="btn btn-success">Create New Task</a>
-            </p>
+            <a asp-action="Create" class="btn btn-success"><i class="bi bi-plus-circle"></i> Create New</a>
         }
+    </div>
+    <div class="card-body">
         @if (!Model.Any())
         {
             <div class="alert alert-info">No tasks found.</div>
         }
         else
         {
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        @if (User.IsInRole(UserRole.Admin))
-                        {
-                            <th>Employee</th>
-                        }
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
                         <tr>
-                            <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                            <th class="sortable" title="Click to sort">Title</th>
                             @if (User.IsInRole(UserRole.Admin))
                             {
-                                <td>@item.Employee?.FirstName @item.Employee?.LastName</td>
+                                <th class="sortable" title="Click to sort">Employee</th>
                             }
-                            <td>
-                                @if (item.IsCompleted)
-                                {
-                                    <span class="badge bg-success">Completed</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning text-dark">Not Completed</span>
-                                }
-                            </td>
-                            <td>
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Details</a>
+                            <th class="sortable" title="Click to sort">Due Date</th>
+                            <th class="sortable" title="Click to sort">Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold">@item.Title</td>
                                 @if (User.IsInRole(UserRole.Admin))
                                 {
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edit</a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm">Delete</a>
+                                    <td>
+                                        @if (item.Employee != null)
+                                        {
+                                            <a asp-controller="Employees" asp-action="Details" asp-route-id="@item.Employee.Id" class="text-decoration-none fw-bold">
+                                                @item.Employee.FirstName @item.Employee.LastName
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Unassigned</span>
+                                        }
+                                    </td>
                                 }
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                                <td>@(item.DueDate.HasValue? item.DueDate.Value.ToString("yyyy-MM-dd") : "No deadline")</td>
+                                <td>
+                                    @if (item.IsCompleted)
+                                    {
+                                        <span class="badge bg-success">Completed</span>
+                                    }
+                                    else if (item.IsOverdue)
+                                    {
+                                        <span class="badge bg-danger">Failed / Overdue</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm"><i class="bi bi-eye"></i></a>
+                                    @if (User.IsInRole(UserRole.Admin))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning btn-sm"><i class="bi bi-pencil"></i></a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
     </div>
 </div>

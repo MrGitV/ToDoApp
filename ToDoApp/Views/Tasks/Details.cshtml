@@ -19,9 +19,16 @@
             <div class="col-sm-9">
                 @if (Model.Task.Employee != null)
                 {
-                    <a asp-controller="Employees" asp-action="Details" asp-route-id="@Model.Task.Employee.Id">
-                        @Model.Task.Employee.FirstName @Model.Task.Employee.LastName
-                    </a>
+                    @if (User.IsInRole(UserRole.Admin))
+                    {
+                        <a asp-controller="Employees" asp-action="Details" asp-route-id="@Model.Task.Employee.Id">
+                            @Model.Task.Employee.FirstName @Model.Task.Employee.LastName
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="fw-bold">@Model.Task.Employee.FirstName @Model.Task.Employee.LastName</span>
+                    }
                 }
             </div>
         </div>

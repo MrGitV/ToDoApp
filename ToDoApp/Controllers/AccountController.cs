@@ -89,6 +89,12 @@ namespace ToDoApp.Controllers
             }
         }
 
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
         // Logs the user out and clears the session cookie.
         [HttpPost]
         [ValidateAntiForgeryToken]

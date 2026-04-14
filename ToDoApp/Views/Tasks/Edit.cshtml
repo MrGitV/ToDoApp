@@ -3,44 +3,50 @@
     ViewData["Title"] = "Edit Task";
 }
 
-<div class="card">
-    <div class="card-header">
-        <h2>Edit Task</h2>
+<div class="card shadow-sm">
+    <div class="card-header bg-warning text-dark">
+        <h2 class="h4 mb-0"><i class="bi bi-pencil-square"></i> Edit Task</h2>
     </div>
     <div class="card-body">
         <form asp-action="Edit" method="post">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Id" />
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <div class="form-group mb-3">
-                <label asp-for="Title" class="control-label"></label>
+                <label asp-for="Title" class="form-label fw-bold"></label>
                 <input asp-for="Title" class="form-control" required />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="Description" class="control-label"></label>
+                <label asp-for="Description" class="form-label fw-bold"></label>
                 <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
-                <label asp-for="EmployeeId" class="control-label">Assign to Employee</label>
-                <select asp-for="EmployeeId" class="form-control" asp-items="@(new SelectList(ViewBag.Employees, "Id", "FirstName"))" required>
+                <label asp-for="DueDate" class="form-label fw-bold">Deadline (Due Date)</label>
+                <input type="date" id="DueDate" name="DueDate" class="form-control" value="@(Model.DueDate.HasValue? Model.DueDate.Value.ToString("yyyy-MM-dd") : "")" />
+                <span asp-validation-for="DueDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="EmployeeId" class="form-label fw-bold">Assign to Employee</label>
+                <select asp-for="EmployeeId" class="form-select" asp-items="@(new SelectList(ViewBag.Employees, "Id", "Username"))" required>
                     <option value="">-- Select Employee --</option>
                 </select>
                 <span asp-validation-for="EmployeeId" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-3 form-check">
+            <div class="form-group mb-4 form-check">
                 <input asp-for="IsCompleted" class="form-check-input" type="checkbox" />
-                <label asp-for="IsCompleted" class="form-check-label"></label>
+                <label asp-for="IsCompleted" class="form-check-label fw-bold">Mark as Completed</label>
             </div>
 
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+            <div class="form-group text-end border-top pt-3">
+                <a asp-action="Index" class="btn btn-secondary me-2"><i class="bi bi-x-circle"></i> Cancel</a>
+                <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Save Changes</button>
             </div>
         </form>
     </div>
