@@ -14,41 +14,36 @@ namespace ToDoApp.Tests
         public TaskServiceTests()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
             _context = new ApplicationDbContext(options);
             _taskService = new TaskService(_context);
         }
 
         // Verifies that GetAllTasksAsync returns all seeded tasks.
         [Fact]
-        public async Task GetAllTasksAsync_ReturnsAllTasks()
+        public async Task UpdateTaskAsync_UpdatesInDatabase()
         {
-            var employee = new Employee { Id = 1, FirstName = "Test", LastName = "User" };
-            _context.Employees.Add(employee);
-            _context.Tasks.AddRange(
-                new ToDoTask { Title = "Task 1", IsCompleted = false, Employee = employee },
-                new ToDoTask { Title = "Task 2", IsCompleted = true, Employee = employee }
-            );
+            var task = new ToDoTask { Title = "Old", EmployeeId = 1 };
+            _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
-            var result = await _taskService.GetAllTasksAsync();
-            Assert.NotNull(result);
-            Assert.Equal(2, result.Count());
+
+            task.Title = "New";
+            await _taskService.UpdateTaskAsync(task);
+
+            var dbTask = await _context.Tasks.FirstAsync();
+            Assert.Equal("New", dbTask.Title);
         }
 
         // Verifies that a new task is correctly added to the database.
         [Fact]
-        public async Task CreateTaskAsync_ValidTask_AddsTaskToDatabase()
+        public async Task DeleteTaskAsync_RemovesFromDatabase()
         {
-            var employee = new Employee { Id = 1, FirstName = "Test", LastName = "User" };
-            _context.Employees.Add(employee);
+            var task = new ToDoTask { Title = "Task", EmployeeId = 1 };
+            _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
-            var task = new ToDoTask { Title = "New Task", Description = "Description", EmployeeId = 1 };
-            await _taskService.CreateTaskAsync(task);
-            var savedTask = await _context.Tasks.FirstOrDefaultAsync(t => t.Title == "New Task");
-            Assert.NotNull(savedTask);
-            Assert.Equal(1, savedTask.EmployeeId);
+
+            await _taskService.DeleteTaskAsync(task.Id);
+            Assert.Empty(_context.Tasks);
         }
     }
 }

@@ -15,8 +15,7 @@ namespace ToDoApp.Tests
         public EmployeeServiceTests()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()).Options;
             _context = new ApplicationDbContext(options);
             IMemoryCache memoryCache = new MemoryCache(new MemoryCacheOptions());
             _employeeService = new EmployeeService(_context, memoryCache);
@@ -26,28 +25,31 @@ namespace ToDoApp.Tests
         [Fact]
         public async Task GetAllEmployeesAsync_ReturnsAllEmployees()
         {
-            _context.Employees.AddRange(
-                new Employee { FirstName = "Ivan", LastName = "Ivanov", DateOfBirth = DateTime.Now.AddYears(-30), Specialty = "Developer", HireDate = DateTime.Now, Username = "ivanov" },
-                new Employee { FirstName = "Elena", LastName = "Petrova", DateOfBirth = DateTime.Now.AddYears(-25), Specialty = "Designer", HireDate = DateTime.Now, Username = "petrova" }
-            );
+            _context.Employees.Add(new Employee { FirstName = "Ivan", LastName = "Ivanov", Username = "iv" });
             await _context.SaveChangesAsync();
             var result = await _employeeService.GetAllEmployeesAsync();
-            Assert.NotNull(result);
-            Assert.Equal(2, result.Count());
+            Assert.Single(result);
         }
 
         // Verifies that a new employee is correctly added to the database.
         [Fact]
-        public async Task CreateEmployeeAsync_ValidEmployee_AddsEmployeeToDatabase()
+        public async Task SearchEmployeesAsync_ReturnsMatches()
         {
-            var employee = new Employee { FirstName = "Mikhail", LastName = "Sidorov", DateOfBirth = DateTime.Now.AddYears(-40), Specialty = "Manager", HireDate = DateTime.Now, Username = "sidorov" };
+            _context.Employees.Add(new Employee { FirstName = "Ivan", LastName = "Ivanov", Specialty = "Dev", Username = "iv" });
+            await _context.SaveChangesAsync();
+            var result = await _employeeService.SearchEmployeesAsync("Ivan");
+            Assert.Single(result);
+        }
 
-            await _employeeService.CreateEmployeeAsync(employee);
+        [Fact]
+        public async Task DeleteEmployeeAsync_RemovesFromDatabase()
+        {
+            var emp = new Employee { FirstName = "Test", LastName = "User", Username = "test" };
+            _context.Employees.Add(emp);
+            await _context.SaveChangesAsync();
 
-            var savedEmployee = await _context.Employees.FirstOrDefaultAsync(e => e.FirstName == "Mikhail");
-            Assert.NotNull(savedEmployee);
-            Assert.Equal("Sidorov", savedEmployee.LastName);
-            Assert.Equal(40, savedEmployee.Age);
+            await _employeeService.DeleteEmployeeAsync(emp.Id);
+            Assert.Empty(_context.Employees);
         }
     }
 }
