@@ -13,7 +13,7 @@ namespace ToDoApp.Services
         // Gets a list of all employees, with optional name and specialty filtering.
         public async Task<IEnumerable<Employee>> GetAllEmployeesAsync(string? searchName = null, string? searchSpecialty = null)
         {
-            var query = _context.Employees.AsQueryable();
+            var query = _context.Employees.Include(e => e.Tasks).AsQueryable();
 
             if (!string.IsNullOrEmpty(searchName))
             {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,10 @@ namespace Tests
 {
     public class ControllersEdgeCasesTests
     {
+        private readonly Mock<IWebHostEnvironment> _webHostMock = new();
+        private readonly Mock<IHttpClientFactory> _clientFactoryMock = new();
+        private readonly Mock<IConfiguration> _configMock = new();
+
         // Helper for setting up Controller Context
         private static ControllerContext GetContext(string username, string role)
         {
@@ -50,8 +55,13 @@ namespace Tests
         [Fact]
         public async Task EmployeesController_Edit_IdMismatch_ReturnsNotFound()
         {
-            var controller = new EmployeesController(new Mock<IEmployeeService>().Object);
-            var result = await controller.EditAsync(1, new Employee { Id = 2 }, null) as NotFoundResult;
+            var controller = new EmployeesController(
+                new Mock<IEmployeeService>().Object,
+                _webHostMock.Object,
+                _clientFactoryMock.Object,
+                _configMock.Object);
+
+            var result = await controller.Edit(1, new Employee { Id = 2 }, null) as NotFoundResult;
             Assert.NotNull(result);
         }
 
@@ -61,10 +71,15 @@ namespace Tests
             var empMock = new Mock<IEmployeeService>();
             empMock.Setup(s => s.GetTrackedEmployeeByIdAsync(1)).ReturnsAsync(new Employee { Id = 1 });
             empMock.Setup(s => s.UpdateEmployeeAsync(It.IsAny<Employee>())).ThrowsAsync(new DbUpdateConcurrencyException());
-            empMock.Setup(s => s.EmployeeExistsAsync(1)).ReturnsAsync(false); // Emulate deleted record
+            empMock.Setup(s => s.EmployeeExistsAsync(1)).ReturnsAsync(false);
 
-            var controller = new EmployeesController(empMock.Object);
-            var result = await controller.EditAsync(1, new Employee { Id = 1 }, null) as NotFoundResult;
+            var controller = new EmployeesController(
+                empMock.Object,
+                _webHostMock.Object,
+                _clientFactoryMock.Object,
+                _configMock.Object);
+
+            var result = await controller.Edit(1, new Employee { Id = 1 }, null) as NotFoundResult;
             Assert.NotNull(result);
         }
 
@@ -84,7 +99,7 @@ namespace Tests
                 ControllerContext = GetContext("emp1", UserRole.Employee)
             };
 
-            var result = await controller.DetailsAsync(1) as ForbidResult;
+            var result = await controller.Details(1) as ForbidResult;
             Assert.NotNull(result);
         }
 
@@ -95,7 +110,7 @@ namespace Tests
             {
                 TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>())
             };
-            var result = await controller.AddCommentAsync(1, "   ") as RedirectToActionResult;
+            var result = await controller.AddComment(1, "   ") as RedirectToActionResult;
             Assert.Equal("Details", result?.ActionName);
             Assert.True(controller.TempData.ContainsKey("Error"));
         }
@@ -107,7 +122,7 @@ namespace Tests
             taskMock.Setup(s => s.GetTaskByIdAsync(99)).ReturnsAsync((ToDoTask)null!);
             var controller = new TasksController(taskMock.Object, new Mock<IEmployeeService>().Object, new Mock<INotificationService>().Object);
 
-            var result = await controller.EditAsync(99) as NotFoundResult;
+            var result = await controller.Edit(99) as NotFoundResult;
             Assert.NotNull(result);
         }
     }

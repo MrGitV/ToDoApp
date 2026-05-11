@@ -14,11 +14,12 @@ namespace ToDoApp.Controllers
         private readonly IEmployeeService _employeeService = employeeService;
         private readonly INotificationService _notificationService = notificationService;
 
-        // Displays a list of tasks, filtered by user role.
-        public async Task<IActionResult> IndexAsync(string searchTitle, string searchDescription, bool? isCompleted)
+        // Displays a list of tasks, filtered by user role and search parameters.
+        public async Task<IActionResult> Index(string searchTitle, string searchDescription, bool? isCompleted)
         {
             IEnumerable<ToDoTask> tasks;
             var username = User.Identity?.Name;
+
             if (string.IsNullOrEmpty(username))
             {
                 return Unauthorized("Username not found in token.");
@@ -38,11 +39,12 @@ namespace ToDoApp.Controllers
             ViewBag.SearchTitle = searchTitle;
             ViewBag.SearchDescription = searchDescription;
             ViewBag.IsCompleted = isCompleted;
+
             return View(tasks);
         }
 
         // Shows details for a specific task, including comments.
-        public async Task<IActionResult> DetailsAsync(int id)
+        public async Task<IActionResult> Details(int id)
         {
             var task = await _taskService.GetTaskByIdAsync(id);
             if (task == null) return NotFound();
@@ -77,12 +79,12 @@ namespace ToDoApp.Controllers
         // Adds a new comment to a task and notifies the relevant user.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddCommentAsync(int taskId, string content)
+        public async Task<IActionResult> AddComment(int taskId, string content)
         {
             if (string.IsNullOrWhiteSpace(content))
             {
                 TempData["Error"] = "Comment cannot be empty.";
-                return RedirectToAction("Details", new { id = taskId });
+                return RedirectToAction(nameof(Details), new { id = taskId });
             }
 
             var task = await _taskService.GetTaskByIdAsync(taskId);
@@ -102,8 +104,7 @@ namespace ToDoApp.Controllers
             await _taskService.AddCommentAsync(comment);
 
             string? employeeUsername = task.Employee.Username;
-            if (string.IsNullOrEmpty(employeeUsername)) return RedirectToAction("Details", new { id = taskId });
-
+            if (string.IsNullOrEmpty(employeeUsername)) return RedirectToAction(nameof(Details), new { id = taskId });
             string recipientUsername = User.IsInRole(UserRole.Admin) ? employeeUsername : "admin";
 
             await _notificationService.CreateNotificationAsync(
@@ -111,13 +112,12 @@ namespace ToDoApp.Controllers
                 $"New comment on task '{task.Title}' by {authorName}.",
                 taskId);
 
-            return RedirectToAction("Details", new { id = taskId });
+            return RedirectToAction(nameof(Details), new { id = taskId });
         }
-
 
         // Displays the form to create a new task.
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> CreateAsync(int? employeeId = null)
+        public async Task<IActionResult> Create(int? employeeId = null)
         {
             ViewBag.Employees = await _employeeService.GetAllEmployeesAsync();
             ViewBag.EmployeeId = employeeId;
@@ -128,7 +128,7 @@ namespace ToDoApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> CreateAsync(ToDoTask task)
+        public async Task<IActionResult> Create(ToDoTask task)
         {
             if (ModelState.IsValid)
             {
@@ -144,7 +144,7 @@ namespace ToDoApp.Controllers
                     );
                 }
 
-                return RedirectToAction(nameof(IndexAsync));
+                return RedirectToAction(nameof(Index));
             }
             ViewBag.Employees = await _employeeService.GetAllEmployeesAsync();
             return View(task);
@@ -152,7 +152,7 @@ namespace ToDoApp.Controllers
 
         // Displays the form to edit a task.
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> EditAsync(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             var task = await _taskService.GetTaskByIdAsync(id);
             if (task == null)
@@ -167,7 +167,7 @@ namespace ToDoApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> EditAsync(int id, ToDoTask task)
+        public async Task<IActionResult> Edit(int id, ToDoTask task)
         {
             if (id != task.Id)
             {
@@ -191,7 +191,7 @@ namespace ToDoApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(IndexAsync));
+                return RedirectToAction(nameof(Index));
             }
             ViewBag.Employees = await _employeeService.GetAllEmployeesAsync();
             return View(task);
@@ -199,7 +199,7 @@ namespace ToDoApp.Controllers
 
         // Displays the confirmation page for deleting a task.
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> DeleteAsync(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var task = await _taskService.GetTaskByIdAsync(id);
             if (task == null)
@@ -213,16 +213,17 @@ namespace ToDoApp.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = UserRole.Admin)]
-        public async Task<IActionResult> DeleteConfirmedAsync(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _taskService.DeleteTaskAsync(id);
-            return RedirectToAction(nameof(IndexAsync));
+            return RedirectToAction(nameof(Index));
         }
 
-        // Checks if a task with the given ID exists.
+        // Helper method to check if a task exists.
         private async Task<bool> TaskExistsAsync(int id)
         {
-            return await _taskService.GetTaskByIdAsync(id) != null;
+            var task = await _taskService.GetTaskByIdAsync(id);
+            return task != null;
         }
     }
 }

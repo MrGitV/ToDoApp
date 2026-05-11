@@ -19,6 +19,7 @@ namespace ToDoApp.Controllers
             {
                 var allEmployees = await _employeeService.GetAllEmployeesAsync();
                 var allTasks = await _taskService.GetAllTasksAsync();
+
                 var adminViewModel = new DashboardViewModel
                 {
                     TotalEmployees = allEmployees.Count(),
@@ -26,6 +27,17 @@ namespace ToDoApp.Controllers
                     PendingTasks = allTasks.Count(t => !t.IsCompleted && !t.IsOverdue),
                     FailedTasks = allTasks.Count(t => t.IsOverdue)
                 };
+
+                var employeesWithTasks = allEmployees.Where(e => e.Tasks != null && e.Tasks.Count != 0).ToList();
+
+                foreach (var emp in employeesWithTasks)
+                {
+                    adminViewModel.EmployeeNames.Add($"{emp.FirstName} {emp.LastName}");
+                    adminViewModel.CompletedTasksPerEmployee.Add(emp.Tasks.Count(t => t.IsCompleted));
+                    adminViewModel.OverdueTasksPerEmployee.Add(emp.Tasks.Count(t => t.IsOverdue));
+                    adminViewModel.PendingTasksPerEmployee.Add(emp.Tasks.Count(t => !t.IsCompleted && !t.IsOverdue));
+                }
+
                 return View(adminViewModel);
             }
 

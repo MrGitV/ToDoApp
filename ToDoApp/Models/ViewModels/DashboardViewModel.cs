@@ -6,5 +6,9 @@
         public int TotalTasks { get; set; }
         public int PendingTasks { get; set; }
         public int FailedTasks { get; set; }
+        public List<string> EmployeeNames { get; set; } = [];
+        public List<int> CompletedTasksPerEmployee { get; set; } = [];
+        public List<int> PendingTasksPerEmployee { get; set; } = [];
+        public List<int> OverdueTasksPerEmployee { get; set; } = [];
     }
 }

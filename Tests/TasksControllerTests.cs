@@ -32,7 +32,7 @@ namespace Tests
             _taskServiceMock.Setup(s => s.GetTaskByIdAsync(1)).ReturnsAsync(new ToDoTask { Id = 1 });
             _taskServiceMock.Setup(s => s.GetCommentsByTaskIdAsync(1)).ReturnsAsync([]);
 
-            var result = await _controller.DetailsAsync(1) as ViewResult;
+            var result = await _controller.Details(1) as ViewResult;
             Assert.NotNull(result);
             _notifServiceMock.Verify(n => n.MarkNotificationsAsReadAsync("admin", 1), Times.Once);
         }
@@ -41,9 +41,9 @@ namespace Tests
         public async Task Edit_PostValidData_RedirectsToIndex()
         {
             var task = new ToDoTask { Id = 1, Title = "Update" };
-            var result = await _controller.EditAsync(1, task) as RedirectToActionResult;
+            var result = await _controller.Edit(1, task) as RedirectToActionResult;
 
-            Assert.Equal("IndexAsync", result?.ActionName);
+            Assert.Equal("Index", result?.ActionName);
             _taskServiceMock.Verify(s => s.UpdateTaskAsync(task), Times.Once);
         }
 
@@ -52,11 +52,11 @@ namespace Tests
         {
             _taskServiceMock.Setup(s => s.GetTaskByIdAsync(1)).ReturnsAsync(new ToDoTask { Id = 1 });
 
-            var getResult = await _controller.DeleteAsync(1) as ViewResult;
+            var getResult = await _controller.Delete(1) as ViewResult;
             Assert.NotNull(getResult);
 
-            var postResult = await _controller.DeleteConfirmedAsync(1) as RedirectToActionResult;
-            Assert.Equal("IndexAsync", postResult?.ActionName);
+            var postResult = await _controller.DeleteConfirmed(1) as RedirectToActionResult;
+            Assert.Equal("Index", postResult?.ActionName);
             _taskServiceMock.Verify(s => s.DeleteTaskAsync(1), Times.Once);
         }
     }
